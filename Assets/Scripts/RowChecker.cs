@@ -4,15 +4,15 @@ using Enums;
 
 public class RowChecker
 {
-    private readonly Grid _grid;
-    private static RowDirection _rowDirection = new RowDirection();
-    private static RowType[] _rowTypes = 
+    private static readonly RowType[] RowTypes = 
     {
         RowType.Horizontal,
         RowType.Vertical,
         RowType.LeftTopToRightBottomDiagonal,
         RowType.LeftBottomToRightTopDiagonal
     };
+
+    private readonly Grid _grid;
 
     public RowChecker(Grid grid)
     {
@@ -30,62 +30,13 @@ public class RowChecker
     {
         return GetMaxLengthOnRows(position, figure, out RowType maxLenghtRow);
     }
-
-    private int GetMaxLengthOnRows(CellPosition position, Figure figure, out RowType maxLenghtRow)
-    {
-        maxLenghtRow = RowType.Unknown;
-        int maxLenght = 0;
-
-        foreach (RowType rowType in _rowTypes)
-        {
-            int lenght = GetLengthOnRow(position, figure, rowType);
-
-            if (lenght > maxLenght)
-            {
-                maxLenght = lenght;
-                maxLenghtRow = rowType;
-            }
-        }
-
-        return maxLenght;
-    }
     
-    private int GetLengthOnRow(CellPosition position, Figure figure, RowType rowType)
+    public int GetLenght(CellPosition position, Figure figure, out RowType maxLenghtRow)
     {
-        int length = 0;
-        Cell cell = _grid.GetCell(position);
-
-        if (IsPossibleCellWithRightFigure(cell, figure))
-        {
-            length = 1;
-            
-            switch (rowType)
-            {
-                case RowType.Horizontal:
-                    length += GetFigureLengthOnDirection(position, figure, DirectionType.Left) +
-                              GetFigureLengthOnDirection(position, figure, DirectionType.Right);
-                    break;
-                case RowType.Vertical:
-                    length += GetFigureLengthOnDirection(position, figure, DirectionType.Top) +
-                              GetFigureLengthOnDirection(position, figure, DirectionType.Bottom);
-                    break;
-                case RowType.LeftTopToRightBottomDiagonal:
-                    length += GetFigureLengthOnDirection(position, figure, DirectionType.LeftTop) +
-                              GetFigureLengthOnDirection(position, figure, DirectionType.RightBottom);
-                    break;
-                case RowType.LeftBottomToRightTopDiagonal:
-                    length += GetFigureLengthOnDirection(position, figure, DirectionType.LeftBottom) +
-                              GetFigureLengthOnDirection(position, figure, DirectionType.RightTop);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(rowType), rowType, null);
-            }
-        }
-
-        return length;
+        return GetMaxLengthOnRows(position, figure, out maxLenghtRow);
     }
-    
-    private List<Cell> GetCellsOnRow(CellPosition position, Figure figure, RowType rowType)
+
+    public List<Cell> GetCellsOnRow(CellPosition position, Figure figure, RowType rowType)
     {
         List<Cell> cellsOnRow = new List<Cell>();
         Cell cell = _grid.GetCell(position);
@@ -120,9 +71,63 @@ public class RowChecker
         return cellsOnRow;
     }
 
+    private int GetMaxLengthOnRows(CellPosition position, Figure figure, out RowType maxLenghtRow)
+    {
+        maxLenghtRow = RowType.Unknown;
+        int maxLenght = 0;
+
+        foreach (RowType rowType in RowTypes)
+        {
+            int lenght = GetLengthOnRow(position, figure, rowType);
+
+            if (lenght > maxLenght)
+            {
+                maxLenght = lenght;
+                maxLenghtRow = rowType;
+            }
+        }
+
+        return maxLenght;
+    }
+
+    private int GetLengthOnRow(CellPosition position, Figure figure, RowType rowType)
+    {
+        int length = 0;
+        Cell cell = _grid.GetCell(position);
+
+        if (IsPossibleCellWithRightFigure(cell, figure) || (cell != null && cell.GetFigure() == Figure.NONE))
+        {
+            length = 1;
+            
+            switch (rowType)
+            {
+                case RowType.Horizontal:
+                    length += GetFigureLengthOnDirection(position, figure, DirectionType.Left) +
+                              GetFigureLengthOnDirection(position, figure, DirectionType.Right);
+                    break;
+                case RowType.Vertical:
+                    length += GetFigureLengthOnDirection(position, figure, DirectionType.Top) +
+                              GetFigureLengthOnDirection(position, figure, DirectionType.Bottom);
+                    break;
+                case RowType.LeftTopToRightBottomDiagonal:
+                    length += GetFigureLengthOnDirection(position, figure, DirectionType.LeftTop) +
+                              GetFigureLengthOnDirection(position, figure, DirectionType.RightBottom);
+                    break;
+                case RowType.LeftBottomToRightTopDiagonal:
+                    length += GetFigureLengthOnDirection(position, figure, DirectionType.LeftBottom) +
+                              GetFigureLengthOnDirection(position, figure, DirectionType.RightTop);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(rowType), rowType, null);
+            }
+        }
+
+        return length;
+    }
+
     private int GetFigureLengthOnDirection(CellPosition position, Figure figure, DirectionType direction)
     {
-        (int row, int col) tupleNextCellPosition = _rowDirection.GetNextPosition(position.Row, position.Col, direction);
+        (int row, int col) tupleNextCellPosition = DirectionTool.GetNextPosition(position.Row, position.Col, direction);
         CellPosition nextCellPosition = new CellPosition(tupleNextCellPosition.row, tupleNextCellPosition.col);
         Cell nextCell = _grid.GetCell(nextCellPosition);
 
@@ -130,13 +135,13 @@ public class RowChecker
         {
             return 1 + GetFigureLengthOnDirection(nextCellPosition, figure, direction);
         }
-
+        
         return 0;
     }
     
     private void GetCellsOnDirection(CellPosition position, Figure figure, DirectionType direction, List<Cell> cells)
     {
-        (int row, int col) tupleNextCellPosition = _rowDirection.GetNextPosition(position.Row, position.Col, direction);
+        (int row, int col) tupleNextCellPosition = DirectionTool.GetNextPosition(position.Row, position.Col, direction);
         CellPosition nextCellPosition = new CellPosition(tupleNextCellPosition.row, tupleNextCellPosition.col);
         Cell nextCell = _grid.GetCell(nextCellPosition);
 
@@ -149,6 +154,6 @@ public class RowChecker
 
     private static bool IsPossibleCellWithRightFigure(Cell cell, Figure figure)
     {
-        return cell && cell.GetFigure() == figure;
+        return cell != null && cell.GetFigure() == figure;
     }
 }

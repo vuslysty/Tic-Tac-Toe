@@ -1,23 +1,14 @@
 using System;
 using Enums;
-using UnityEngine;
-using UnityEngine.UI;
 
-public class Cell : MonoBehaviour
+public class Cell
 {
     public Action OnFigureSetEvent;
 
-    private Image _image;
-    
     private Figure _figure;
 
-    private void Awake()
+    public Cell()
     {
-        _image = GetComponent<Image>();
-
-        _image.type = Image.Type.Filled;
-        
-        
         _figure = Figure.NONE;
     }
 
@@ -31,11 +22,18 @@ public class Cell : MonoBehaviour
         return _figure;
     }
 
-    public void SetFigure(Figure figure)
-    {
+    public bool SetFigure(Figure figure)
+    { 
+        bool result = false;
+        
         if (IsEmpty())
         {
-            
+            _figure = figure;
+            OnFigureSetEvent?.Invoke();
+
+            result = true;
         }
+
+        return result;
     }
 }
