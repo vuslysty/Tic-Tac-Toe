@@ -1,93 +1,95 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 
-public class Grid : IEnumerator, IEnumerable
+namespace Logic
 {
-    public Cell[,] Cells { get; set; }
-    public int Rows { get; }
-    public int Cols { get; }
-
-    private CellPosition _currentEnumerablePosition = new CellPosition();
-
-    public Grid(int rows, int cols)
+    public class Grid : IEnumerator, IEnumerable
     {
-        Rows = rows;
-        Cols = cols;
+        public Cell[,] Cells { get; set; }
+        public int Rows { get; }
+        public int Cols { get; }
+
+        private CellPosition _currentEnumerablePosition = new CellPosition();
+
+        public Grid(int rows, int cols)
+        {
+            Rows = rows;
+            Cols = cols;
         
-        InitCells(rows, cols);
-    }
-
-    private void InitCells(int rows, int cols)
-    {
-        Cells = new Cell[rows, cols];
-
-        for (int col = 0; col < Cols; col++)
-        {
-            for (int row = 0; row < Rows; row++)
-            {
-                Cells[row, col] = new Cell();
-            }
+            InitCells(rows, cols);
         }
-    }
 
-    public Cell GetCell(CellPosition position)
-    {
-        return IsValidCell(position) ? Cells[position.Row, position.Col] : null;
-    }
-
-    public Cell GetCell(int row, int col)
-    {
-        CellPosition position = new CellPosition(row, col);
-
-        return GetCell(position);
-    }
-
-    public CellPosition GetCellPosition(Cell cell)
-    {
-        for (int row = 0; row < Rows; row++)
+        private void InitCells(int rows, int cols)
         {
+            Cells = new Cell[rows, cols];
+
             for (int col = 0; col < Cols; col++)
             {
-                if (Cells[row, col] == cell)
+                for (int row = 0; row < Rows; row++)
                 {
-                    return new CellPosition(row, col);
+                    Cells[row, col] = new Cell();
                 }
             }
         }
 
-        return null;
-    }
-
-    public bool IsValidCell(CellPosition position)
-    {
-        return position.Row >= 0 && position.Row < Rows && 
-               position.Col >= 0 && position.Col < Cols;
-    }
-
-    public IEnumerator GetEnumerator()
-    {
-        Reset();
-        return this;
-    }
-
-    public bool MoveNext()
-    {
-        _currentEnumerablePosition.Col++;
-
-        if (_currentEnumerablePosition.Col >= Cols)
+        public Cell GetCell(CellPosition position)
         {
-            _currentEnumerablePosition.Col = 0;
-            _currentEnumerablePosition.Row++;
+            return IsValidCell(position) ? Cells[position.Row, position.Col] : null;
         }
 
-        return IsValidCell(_currentEnumerablePosition);
-    }
+        public Cell GetCell(int row, int col)
+        {
+            CellPosition position = new CellPosition(row, col);
 
-    public void Reset()
-    {
-        _currentEnumerablePosition.Col = -1;
-        _currentEnumerablePosition.Row = 0;
-    }
+            return GetCell(position);
+        }
 
-    public object Current => GetCell(_currentEnumerablePosition);
+        public CellPosition GetCellPosition(Cell cell)
+        {
+            for (int row = 0; row < Rows; row++)
+            {
+                for (int col = 0; col < Cols; col++)
+                {
+                    if (Cells[row, col] == cell)
+                    {
+                        return new CellPosition(row, col);
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public bool IsValidCell(CellPosition position)
+        {
+            return position.Row >= 0 && position.Row < Rows && 
+                   position.Col >= 0 && position.Col < Cols;
+        }
+
+        public IEnumerator GetEnumerator()
+        {
+            Reset();
+            return this;
+        }
+
+        public bool MoveNext()
+        {
+            _currentEnumerablePosition.Col++;
+
+            if (_currentEnumerablePosition.Col >= Cols)
+            {
+                _currentEnumerablePosition.Col = 0;
+                _currentEnumerablePosition.Row++;
+            }
+
+            return IsValidCell(_currentEnumerablePosition);
+        }
+
+        public void Reset()
+        {
+            _currentEnumerablePosition.Col = -1;
+            _currentEnumerablePosition.Row = 0;
+        }
+
+        public object Current => GetCell(_currentEnumerablePosition);
+    }
 }

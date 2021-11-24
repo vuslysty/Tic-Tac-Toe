@@ -113,6 +113,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 637d2f0dfb414eec82724036961db1fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GridLayout: {fileID: 7307809169261023944}
-  GameConfig: {fileID: 11400000, guid: c2f5f58ca34a0dd4d9ce7a9152a356c8, type: 2}
-  CellPrefab: {fileID: 3124762944041147321, guid: 9d5010d076ebc4a43b0b2ef734827c74, type: 3}
+  gridLayout: {fileID: 7307809169261023944}

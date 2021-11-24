@@ -1,8 +1,8 @@
 ﻿using System;
-using UI;
-using UI.Services;
+using UI.Services.Windows;
+using UI.Windows;
 
-namespace StaticData
+namespace UI.StaticData
 {
     [Serializable]
     public class WindowConfig

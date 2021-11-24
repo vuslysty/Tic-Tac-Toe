@@ -7,87 +7,90 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-public class CellBehaviour : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
+namespace Logic
 {
-    public Action OnSelectEvent;
-    public Action OnDeselectEvent;
+    public class CellBehaviour : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
+    {
+        public Action OnSelectEvent;
+        public Action OnDeselectEvent;
     
-    private const float ShowFigureTime = 0.2f;
+        private const float ShowFigureTime = 0.2f;
 
-    public Image spriteX;
-    public Image spriteO;
+        public Image spriteX;
+        public Image spriteO;
 
-    public TextMeshProUGUI number;
+        public TextMeshProUGUI number;
 
-    private Cell _cell;
-    private RowChecker _rowChecker;
-    private CellPosition _position;
+        private Cell _cell;
+        private RowChecker _rowChecker;
+        private CellPosition _position;
 
-    public bool Clickable { get; set; }
+        public bool Clickable { get; set; }
 
-    public void Construct(Cell cell, CellPosition position, RowChecker rowChecker)
-    {
-        _cell = cell;
-        _cell.OnFigureSetEvent += OnFigureSet;
-
-        _rowChecker = rowChecker;
-        _position = position;
-    }
-
-    public void OnDestroy()
-    {
-        _cell.OnFigureSetEvent -= OnFigureSet;
-    }
-
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        if (Clickable)
+        public void Construct(Cell cell, CellPosition position, RowChecker rowChecker)
         {
-            _cell.SetFigure(Random.value - 0.5 > 0 ? Figure.CROSS : Figure.NOUGHT);
-        }
-    }
+            _cell = cell;
+            _cell.OnFigureSetEvent += OnFigureSet;
 
-    private void OnFigureSet(Cell cell)
-    {
-        Figure currentFigure = _cell.GetFigure();
-
-        switch (currentFigure)
-        {
-            case Figure.CROSS:
-                StartCoroutine(ShowFigure(spriteX, ShowFigureTime));
-                break;
-            case Figure.NOUGHT:
-                StartCoroutine(ShowFigure(spriteO, ShowFigureTime));
-                break;
-        }
-    }
-
-    private IEnumerator ShowFigure(Image image, float time)
-    {
-        float elapsed = 0;
-
-        while (elapsed < time)
-        {
-            image.fillAmount = Mathf.Lerp(0, 1, elapsed / time);
-            elapsed += Time.deltaTime;
-            yield return null;
+            _rowChecker = rowChecker;
+            _position = position;
         }
 
-        image.fillAmount = 1;
-    }
+        public void OnDestroy()
+        {
+            _cell.OnFigureSetEvent -= OnFigureSet;
+        }
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        number.text = _rowChecker.GetLenght(_position, Figure.CROSS).ToString();
+        public void OnPointerDown(PointerEventData eventData)
+        {
+            if (Clickable)
+            {
+                _cell.SetFigure(Random.value - 0.5 > 0 ? Figure.CROSS : Figure.NOUGHT);
+            }
+        }
+
+        private void OnFigureSet(Cell cell)
+        {
+            Figure currentFigure = _cell.GetFigure();
+
+            switch (currentFigure)
+            {
+                case Figure.CROSS:
+                    StartCoroutine(ShowFigure(spriteX, ShowFigureTime));
+                    break;
+                case Figure.NOUGHT:
+                    StartCoroutine(ShowFigure(spriteO, ShowFigureTime));
+                    break;
+            }
+        }
+
+        private IEnumerator ShowFigure(Image image, float time)
+        {
+            float elapsed = 0;
+
+            while (elapsed < time)
+            {
+                image.fillAmount = Mathf.Lerp(0, 1, elapsed / time);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            image.fillAmount = 1;
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            number.text = _rowChecker.GetLenght(_position, Figure.CROSS).ToString();
         
-        number.gameObject.SetActive(true);
+            number.gameObject.SetActive(true);
         
-        OnSelectEvent?.Invoke();
-    }
+            OnSelectEvent?.Invoke();
+        }
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        number.gameObject.SetActive(false);
-        OnDeselectEvent?.Invoke();
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            number.gameObject.SetActive(false);
+            OnDeselectEvent?.Invoke();
+        }
     }
 }

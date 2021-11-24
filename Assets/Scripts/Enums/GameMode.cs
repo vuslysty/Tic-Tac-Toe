@@ -1,4 +1,4 @@
-﻿namespace Infrastructure.States
+﻿namespace Enums
 {
     public enum GameMode
     {

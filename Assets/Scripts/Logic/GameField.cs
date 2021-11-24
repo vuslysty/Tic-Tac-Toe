@@ -1,116 +1,106 @@
 ﻿using System;
 using System.Collections.Generic;
-using Configs;
 using Enums;
+using Infrastructure.Configs;
+using Infrastructure.Services;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(GridLayoutGroup))]
-[RequireComponent(typeof(RectTransform))]
-public class GameField : MonoBehaviour
+namespace Logic
 {
-    public Action<CellPosition> OnFigureSetEvent;
-    
-    private Grid _grid;
-    private RowChecker _rowChecker;
-
-    public GridLayoutGroup GridLayout;
-    public GameConfig GameConfig;
-
-    public CellBehaviour CellPrefab;
-
-    private List<CellBehaviour> _cellBehaviours;
-
-    public void Construct(Grid grid, GameConfig config)
+    [RequireComponent(typeof(GridLayoutGroup))]
+    [RequireComponent(typeof(RectTransform))]
+    public class GameField : MonoBehaviour
     {
-        _grid = grid;
-        GameConfig = config;
+        public Action<CellPosition> onFigureSetEvent;
+
+        public GridLayoutGroup gridLayout;
+
+        private IGameFactory _gameFactory;
         
-        _rowChecker = new RowChecker(_grid);
-        
-        foreach (Cell cell in _grid)
+        private Grid _grid;
+        private RowChecker _rowChecker;
+        private GameConfig _gameConfig;
+
+        private List<CellBehaviour> _cellBehaviours;
+
+        public void Construct(GameConfig config, IGameFactory gameFactory)
         {
-            cell.OnFigureSetEvent += OnFigureSet;
+            _gameConfig = config;
+            _gameFactory = gameFactory;
+
+            _grid = new Grid(config.Rows, config.Cols);
+            _rowChecker = new RowChecker(_grid);
+
+            foreach (Cell cell in _grid)
+            {
+                cell.OnFigureSetEvent += OnFigureSet;
+            }
+        
+            InitializeLayoutGrid();
+            CreateVisualCells();
+            
+            SetClickableOn();
         }
-        
-        InitializeLayoutGrid();
-        CreateVisualCells();
-        SetClickableOn();
-    }
-    
-    private void Awake()
-    {
-        _grid = new Grid(GameConfig.Rows, GameConfig.Cols);
 
-        _rowChecker = new RowChecker(_grid);
-
-        foreach (Cell cell in _grid)
+        public void PutFigure(int row, int col, Figure figure)
         {
-            cell.OnFigureSetEvent += OnFigureSet;
+            Cell cell = _grid.GetCell(row, col);
+
+            if (cell != null)
+            {
+                cell.SetFigure(figure);
+            }
         }
-        
-        InitializeLayoutGrid();
-        CreateVisualCells();
-        SetClickableOn();
-    }
 
-    public void PutFigure(int row, int col, Figure figure)
-    {
-        Cell cell = _grid.GetCell(row, col);
-
-        if (cell != null)
+        public void SetClickableOn()
         {
-            cell.SetFigure(figure);
+            foreach (CellBehaviour cellBehaviour in _cellBehaviours)
+            {
+                cellBehaviour.Clickable = true;
+            }
         }
-    }
 
-    public void SetClickableOn()
-    {
-        foreach (CellBehaviour cellBehaviour in _cellBehaviours)
+        public void SetClickableOff()
         {
-            cellBehaviour.Clickable = true;
+            foreach (CellBehaviour cellBehaviour in _cellBehaviours)
+            {
+                cellBehaviour.Clickable = false;
+            }
         }
-    }
 
-    public void SetClickableOff()
-    {
-        foreach (CellBehaviour cellBehaviour in _cellBehaviours)
+        private void OnFigureSet(Cell cell)
         {
-            cellBehaviour.Clickable = false;
+            onFigureSetEvent?.Invoke(_grid.GetCellPosition(cell));
         }
-    }
 
-    private void OnFigureSet(Cell cell)
-    {
-        OnFigureSetEvent?.Invoke(_grid.GetCellPosition(cell));
-    }
-
-    private void InitializeLayoutGrid()
-    {
-        RectTransform rectTransform = GetComponent<RectTransform>();
-        
-        float fieldWidth = rectTransform.rect.width;
-        float fieldHeight = rectTransform.rect.height;
-
-        float horizontalSpacesLenght = (GameConfig.Cols + 1) * GridLayout.spacing.x;
-        float verticalSpacesLenght = (GameConfig.Rows + 1) * GridLayout.spacing.y;
-        
-        float cellWidth = (fieldWidth - horizontalSpacesLenght) / GameConfig.Cols;
-        float cellHeight = (fieldHeight - verticalSpacesLenght) / GameConfig.Rows;
-
-        GridLayout.cellSize = new Vector2(cellWidth, cellHeight);
-    }
-
-    private void CreateVisualCells()
-    {
-        _cellBehaviours = new List<CellBehaviour>();
-
-        foreach (Cell cell in _grid)
+        private void InitializeLayoutGrid()
         {
-            CellBehaviour cellBehaviour = Instantiate(CellPrefab, GridLayout.transform);
-            cellBehaviour.Construct(cell, _grid.GetCellPosition(cell), _rowChecker);
+            RectTransform rectTransform = GetComponent<RectTransform>();
+        
+            float fieldWidth = rectTransform.rect.width;
+            float fieldHeight = rectTransform.rect.height;
 
-            _cellBehaviours.Add(cellBehaviour);
+            float horizontalSpacesLenght = (_gameConfig.Cols + 1) * gridLayout.spacing.x;
+            float verticalSpacesLenght = (_gameConfig.Rows + 1) * gridLayout.spacing.y;
+        
+            float cellWidth = (fieldWidth - horizontalSpacesLenght) / _gameConfig.Cols;
+            float cellHeight = (fieldHeight - verticalSpacesLenght) / _gameConfig.Rows;
+
+            gridLayout.cellSize = new Vector2(cellWidth, cellHeight);
+        }
+
+        private void CreateVisualCells()
+        {
+            _cellBehaviours = new List<CellBehaviour>();
+
+            foreach (Cell cell in _grid)
+            {
+                CellBehaviour cellBehaviour = _gameFactory.CreateCellBehaviour(cell, _grid.GetCellPosition(cell),
+                    _rowChecker, gridLayout.transform);
+
+                _cellBehaviours.Add(cellBehaviour);
+            }
         }
     }
 }

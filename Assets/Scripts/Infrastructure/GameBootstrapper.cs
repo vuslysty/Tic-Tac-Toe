@@ -1,5 +1,4 @@
-﻿using System;
-using Infrastructure.States;
+﻿using Infrastructure.States;
 using UnityEngine;
 
 namespace Infrastructure

@@ -1,39 +1,42 @@
 using System;
 using Enums;
 
-public class Cell
+namespace Logic
 {
-    public Action<Cell> OnFigureSetEvent;
-
-    private Figure _figure;
-
-    public Cell()
+    public class Cell
     {
-        _figure = Figure.NONE;
-    }
+        public Action<Cell> OnFigureSetEvent;
 
-    public bool IsEmpty()
-    {
-        return _figure == Figure.NONE;
-    }
+        private Figure _figure;
 
-    public Figure GetFigure()
-    {
-        return _figure;
-    }
-
-    public bool SetFigure(Figure figure)
-    { 
-        bool result = false;
-        
-        if (IsEmpty())
+        public Cell()
         {
-            _figure = figure;
-            OnFigureSetEvent?.Invoke(this);
-
-            result = true;
+            _figure = Figure.NONE;
         }
 
-        return result;
+        public bool IsEmpty()
+        {
+            return _figure == Figure.NONE;
+        }
+
+        public Figure GetFigure()
+        {
+            return _figure;
+        }
+
+        public bool SetFigure(Figure figure)
+        { 
+            bool result = false;
+        
+            if (IsEmpty())
+            {
+                _figure = figure;
+                OnFigureSetEvent?.Invoke(this);
+
+                result = true;
+            }
+
+            return result;
+        }
     }
 }

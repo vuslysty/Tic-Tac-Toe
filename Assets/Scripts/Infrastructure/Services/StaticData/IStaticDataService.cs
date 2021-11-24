@@ -1,9 +1,8 @@
-﻿using Configs;
-using Infrastructure.Services;
-using StaticData;
-using UI.Services;
+﻿using Infrastructure.Configs;
+using UI.Services.Windows;
+using UI.StaticData;
 
-namespace Infrastructure.AssetManagement
+namespace Infrastructure.Services.StaticData
 {
     public interface IStaticDataService : IService
     {

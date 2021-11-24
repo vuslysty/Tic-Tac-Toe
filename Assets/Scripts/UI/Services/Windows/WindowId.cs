@@ -1,4 +1,4 @@
-﻿namespace UI.Services
+﻿namespace UI.Services.Windows
 {
     public enum WindowId
     {

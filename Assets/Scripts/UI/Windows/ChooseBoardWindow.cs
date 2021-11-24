@@ -1,7 +1,7 @@
 ﻿using UnityEngine.Events;
 using UnityEngine.UI;
 
-namespace UI
+namespace UI.Windows
 {
     public class ChooseBoardWindow : WindowBase
     {
