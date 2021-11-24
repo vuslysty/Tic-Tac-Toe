@@ -1,8 +1,11 @@
-﻿public enum RowType
+﻿namespace Enums
 {
-    Unknown,
-    Horizontal,
-    Vertical,
-    LeftTopToRightBottomDiagonal,
-    LeftBottomToRightTopDiagonal
+    public enum RowType
+    {
+        Unknown,
+        Horizontal,
+        Vertical,
+        LeftTopToRightBottomDiagonal,
+        LeftBottomToRightTopDiagonal
+    }
 }

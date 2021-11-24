@@ -34,6 +34,11 @@ public class CellBehaviour : MonoBehaviour, IPointerDownHandler, IPointerEnterHa
         _position = position;
     }
 
+    public void OnDestroy()
+    {
+        _cell.OnFigureSetEvent -= OnFigureSet;
+    }
+
     public void OnPointerDown(PointerEventData eventData)
     {
         if (Clickable)
@@ -42,15 +47,18 @@ public class CellBehaviour : MonoBehaviour, IPointerDownHandler, IPointerEnterHa
         }
     }
 
-    private void OnFigureSet()
+    private void OnFigureSet(Cell cell)
     {
-        if (_cell.GetFigure() == Figure.CROSS)
+        Figure currentFigure = _cell.GetFigure();
+
+        switch (currentFigure)
         {
-            StartCoroutine(ShowFigure(spriteX, ShowFigureTime));
-        }
-        else if (_cell.GetFigure() == Figure.NOUGHT)
-        {
-            StartCoroutine(ShowFigure(spriteO, ShowFigureTime));
+            case Figure.CROSS:
+                StartCoroutine(ShowFigure(spriteX, ShowFigureTime));
+                break;
+            case Figure.NOUGHT:
+                StartCoroutine(ShowFigure(spriteO, ShowFigureTime));
+                break;
         }
     }
 

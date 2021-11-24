@@ -3,7 +3,7 @@ using Enums;
 
 public class Cell
 {
-    public Action OnFigureSetEvent;
+    public Action<Cell> OnFigureSetEvent;
 
     private Figure _figure;
 
@@ -29,7 +29,7 @@ public class Cell
         if (IsEmpty())
         {
             _figure = figure;
-            OnFigureSetEvent?.Invoke();
+            OnFigureSetEvent?.Invoke(this);
 
             result = true;
         }

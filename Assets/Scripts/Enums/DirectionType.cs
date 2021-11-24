@@ -1,11 +1,14 @@
-﻿public enum DirectionType
+﻿namespace Enums
 {
-    Top,
-    Bottom,
-    Left,
-    Right,
-    LeftTop,
-    LeftBottom,
-    RightTop,
-    RightBottom
+    public enum DirectionType
+    {
+        Top,
+        Bottom,
+        Left,
+        Right,
+        LeftTop,
+        LeftBottom,
+        RightTop,
+        RightBottom
+    }
 }
