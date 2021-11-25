@@ -64,7 +64,7 @@ namespace Logic
             return position.Row >= 0 && position.Row < Rows && 
                    position.Col >= 0 && position.Col < Cols;
         }
-
+        
         public IEnumerator GetEnumerator()
         {
             Reset();

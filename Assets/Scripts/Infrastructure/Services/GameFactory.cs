@@ -36,12 +36,11 @@ namespace Infrastructure.Services
             return gameFieldObject;
         }
 
-        public CellBehaviour CreateCellBehaviour(Cell cell, CellPosition position, RowChecker rowChecker, 
-            Transform parent)
+        public CellBehaviour CreateCellBehaviour(Cell cell, GameField gameField, Transform parent)
         {
             CellBehaviour cellBehaviour = Instantiate(AssetPath.CellPath, parent).GetComponent<CellBehaviour>();
             
-            cellBehaviour.Construct(cell, position, rowChecker);
+            cellBehaviour.Construct(cell, gameField);
 
             return cellBehaviour;
         }

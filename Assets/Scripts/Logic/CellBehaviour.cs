@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using Enums;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using Random = UnityEngine.Random;
 
 namespace Logic
 {
     public class CellBehaviour : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
     {
-        public Action OnSelectEvent;
-        public Action OnDeselectEvent;
-    
         private const float ShowFigureTime = 0.2f;
 
         public Image spriteX;
@@ -22,18 +17,24 @@ namespace Logic
         public TextMeshProUGUI number;
 
         private Cell _cell;
+        private GameField _gameField;
+        
         private RowChecker _rowChecker;
         private CellPosition _position;
 
+        public Cell Cell => _cell;
+
         public bool Clickable { get; set; }
 
-        public void Construct(Cell cell, CellPosition position, RowChecker rowChecker)
+        public void Construct(Cell cell, GameField gameField)
         {
             _cell = cell;
+            _gameField = gameField;
+            
             _cell.OnFigureSetEvent += OnFigureSet;
 
-            _rowChecker = rowChecker;
-            _position = position;
+            _rowChecker = gameField.RowChecker;
+            _position = gameField.Grid.GetCellPosition(cell);
         }
 
         public void OnDestroy()
@@ -45,7 +46,7 @@ namespace Logic
         {
             if (Clickable)
             {
-                _cell.SetFigure(Random.value - 0.5 > 0 ? Figure.CROSS : Figure.NOUGHT);
+                _cell.SetFigure(_gameField.FigureOnClick);
             }
         }
 
@@ -78,19 +79,48 @@ namespace Logic
             image.fillAmount = 1;
         }
 
+        public void PlayAnimation()
+        {
+            StartCoroutine(PlayAnimationRoutine(0.5f));
+        }
+
+        private IEnumerator PlayAnimationRoutine(float fullCycleTime)
+        {
+            Transform figureImageTransform = _cell.GetFigure() == Figure.CROSS ? spriteX.transform : spriteO.transform;
+            
+            while (true)
+            {
+                yield return ChangeScaleRoutine(figureImageTransform, 0.8f, fullCycleTime / 2);
+                yield return ChangeScaleRoutine(figureImageTransform, 1, fullCycleTime / 2);
+            }
+        }
+
+        private IEnumerator ChangeScaleRoutine(Transform transform, float to, float time)
+        {
+            Vector3 startScale = transform.localScale;
+            Vector3 endScale = Vector3.one * to;
+            float elapsed = 0;
+
+            while (elapsed < time)
+            {
+                transform.localScale = Vector3.Lerp(startScale, endScale, elapsed / time);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            transform.localScale = endScale;
+        }
+
         public void OnPointerEnter(PointerEventData eventData)
         {
-            number.text = _rowChecker.GetLenght(_position, Figure.CROSS).ToString();
+            number.text = _rowChecker.GetLenght(_position, _gameField.FigureOnClick).ToString();
         
             number.gameObject.SetActive(true);
-        
-            OnSelectEvent?.Invoke();
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
             number.gameObject.SetActive(false);
-            OnDeselectEvent?.Invoke();
         }
     }
 }

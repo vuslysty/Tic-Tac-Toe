@@ -24,6 +24,11 @@ namespace Logic
 
         private List<CellBehaviour> _cellBehaviours;
 
+        public Figure FigureOnClick { get; private set; }
+
+        public RowChecker RowChecker => _rowChecker;
+        public Grid Grid => _grid;
+
         public void Construct(GameConfig config, IGameFactory gameFactory)
         {
             _gameConfig = config;
@@ -39,8 +44,6 @@ namespace Logic
         
             InitializeLayoutGrid();
             CreateVisualCells();
-            
-            SetClickableOn();
         }
 
         public void PutFigure(int row, int col, Figure figure)
@@ -53,8 +56,10 @@ namespace Logic
             }
         }
 
-        public void SetClickableOn()
+        public void SetClickableOn(Figure figure)
         {
+            FigureOnClick = figure;
+            
             foreach (CellBehaviour cellBehaviour in _cellBehaviours)
             {
                 cellBehaviour.Clickable = true;
@@ -67,6 +72,34 @@ namespace Logic
             {
                 cellBehaviour.Clickable = false;
             }
+        }
+
+        public int CountOfEmptyCells()
+        {
+            int count = 0;
+
+            foreach (Cell cell in _grid)
+            {
+                if (cell.GetFigure() == Figure.NONE)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        public CellBehaviour GetCellBehaviour(Cell cell)
+        {
+            foreach (CellBehaviour cellBehaviour in _cellBehaviours)
+            {
+                if (cell == cellBehaviour.Cell)
+                {
+                    return cellBehaviour;
+                }
+            }
+
+            return null;
         }
 
         private void OnFigureSet(Cell cell)
@@ -96,8 +129,7 @@ namespace Logic
 
             foreach (Cell cell in _grid)
             {
-                CellBehaviour cellBehaviour = _gameFactory.CreateCellBehaviour(cell, _grid.GetCellPosition(cell),
-                    _rowChecker, gridLayout.transform);
+                CellBehaviour cellBehaviour = _gameFactory.CreateCellBehaviour(cell, this, gridLayout.transform);
 
                 _cellBehaviours.Add(cellBehaviour);
             }

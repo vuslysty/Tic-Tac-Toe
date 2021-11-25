@@ -7,7 +7,6 @@ namespace Infrastructure.Services
     {
         GameObject CreateHud();
         GameObject CreateGameField();
-        CellBehaviour CreateCellBehaviour(Cell cell, CellPosition position, RowChecker rowChecker, 
-            Transform parent);
+        CellBehaviour CreateCellBehaviour(Cell cell, GameField gameField, Transform parent);
     }
 }
