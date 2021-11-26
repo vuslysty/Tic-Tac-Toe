@@ -1,26 +1,20 @@
 ﻿using System.Collections;
 using Enums;
-using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace Logic
 {
-    public class CellBehaviour : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
+    public class CellBehaviour : MonoBehaviour, IPointerDownHandler
     {
         private const float ShowFigureTime = 0.2f;
 
         public Image spriteX;
         public Image spriteO;
 
-        public TextMeshProUGUI number;
-
         private Cell _cell;
         private GameField _gameField;
-        
-        private RowChecker _rowChecker;
-        private CellPosition _position;
 
         public Cell Cell => _cell;
 
@@ -32,9 +26,6 @@ namespace Logic
             _gameField = gameField;
             
             _cell.OnFigureSetEvent += OnFigureSet;
-
-            _rowChecker = gameField.RealChecker;
-            _position = gameField.Grid.GetCellPosition(cell);
         }
 
         public void OnDestroy()
@@ -109,18 +100,6 @@ namespace Logic
             }
 
             transform.localScale = endScale;
-        }
-
-        public void OnPointerEnter(PointerEventData eventData)
-        {
-            number.text = _rowChecker.GetLenght(_position, _gameField.FigureOnClick).ToString();
-        
-            number.gameObject.SetActive(true);
-        }
-
-        public void OnPointerExit(PointerEventData eventData)
-        {
-            number.gameObject.SetActive(false);
         }
     }
 }
