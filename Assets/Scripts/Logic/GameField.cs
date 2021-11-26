@@ -19,23 +19,26 @@ namespace Logic
         private IGameFactory _gameFactory;
         
         private Grid _grid;
-        private RowChecker _rowChecker;
-        private GameConfig _gameConfig;
+        private RowChecker _realChecker;
+        private RowPossibleChecker _possibleChecker;
+        private IGameConfig _gameConfig;
 
         private List<CellBehaviour> _cellBehaviours;
 
         public Figure FigureOnClick { get; private set; }
 
-        public RowChecker RowChecker => _rowChecker;
+        public RowChecker RealChecker => _realChecker;
+        public RowPossibleChecker PossibleChecker => _possibleChecker;
         public Grid Grid => _grid;
 
-        public void Construct(GameConfig config, IGameFactory gameFactory)
+        public void Construct(IGameConfig config, IGameFactory gameFactory)
         {
             _gameConfig = config;
             _gameFactory = gameFactory;
 
             _grid = new Grid(config.Rows, config.Cols);
-            _rowChecker = new RowChecker(_grid);
+            _realChecker = new RowChecker(_grid);
+            _possibleChecker = new RowPossibleChecker(_grid);
 
             foreach (Cell cell in _grid)
             {
@@ -44,16 +47,6 @@ namespace Logic
         
             InitializeLayoutGrid();
             CreateVisualCells();
-        }
-
-        public void PutFigure(int row, int col, Figure figure)
-        {
-            Cell cell = _grid.GetCell(row, col);
-
-            if (cell != null)
-            {
-                cell.SetFigure(figure);
-            }
         }
 
         public void SetClickableOn(Figure figure)

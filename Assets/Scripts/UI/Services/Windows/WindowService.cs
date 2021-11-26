@@ -26,6 +26,9 @@ namespace UI.Services.Windows
                 case WindowId.ChoosePlayMode:
                     window = _uiFactory.CreateWindow(WindowId.ChoosePlayMode);
                     break;
+                case WindowId.ChooseBot:
+                    window = _uiFactory.CreateWindow(WindowId.ChooseBot);
+                    break;
             }
 
             return window;

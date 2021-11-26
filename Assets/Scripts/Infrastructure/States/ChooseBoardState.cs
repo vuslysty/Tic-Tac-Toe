@@ -12,15 +12,15 @@ namespace Infrastructure.States
     {
         private readonly GameStateMachine _stateMachine;
         private readonly IWindowService _windows;
-        private readonly IStaticDataService _staticData;
-        
+        private readonly IGameConfig _gameConfig;
+
         private ChooseBoardWindow _chooseBoardWindow;
 
-        public ChooseBoardState(GameStateMachine stateMachine, IWindowService windows, IStaticDataService staticData)
+        public ChooseBoardState(GameStateMachine stateMachine, IWindowService windows, IGameConfig gameConfig)
         {
             _stateMachine = stateMachine;
             _windows = windows;
-            _staticData = staticData;
+            _gameConfig = gameConfig;
         }
 
         public void Enter()
@@ -49,10 +49,8 @@ namespace Infrastructure.States
 
         private void SetBoardSize(int size)
         {
-            GameConfig config = _staticData.GetGameConfig();
-            
-            config.Rows = size;
-            config.Cols = size;
+            _gameConfig.Rows = size;
+            _gameConfig.Cols = size;
         }
     }
 }

@@ -33,7 +33,7 @@ namespace Logic
             
             _cell.OnFigureSetEvent += OnFigureSet;
 
-            _rowChecker = gameField.RowChecker;
+            _rowChecker = gameField.RealChecker;
             _position = gameField.Grid.GetCellPosition(cell);
         }
 

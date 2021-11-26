@@ -1,4 +1,5 @@
 ﻿using Enums;
+using Infrastructure.Configs;
 using UI;
 using UI.Services;
 using UI.Services.Windows;
@@ -10,13 +11,15 @@ namespace Infrastructure.States
     {
         private readonly GameStateMachine _stateMachine;
         private readonly IWindowService _windows;
+        private readonly IGameConfig _gameConfig;
 
         private ChoosePlayModeWindow _choosePlayModeWindow;
 
-        public ChoosePlayModeState(GameStateMachine stateMachine, IWindowService windows)
+        public ChoosePlayModeState(GameStateMachine stateMachine, IWindowService windows, IGameConfig gameConfig)
         {
             _stateMachine = stateMachine;
             _windows = windows;
+            _gameConfig = gameConfig;
         }
         
         public void Enter()
@@ -28,8 +31,8 @@ namespace Infrastructure.States
                 _choosePlayModeWindow.PlayerVsPlayerButton.onClick.AddListener(() =>
                     EnterGameLoopState(GameMode.PlayerVsPlayer));
                 _choosePlayModeWindow.PlayerVsBotButton.onClick.AddListener(() =>
-                    EnterGameLoopState(GameMode.PlayerVsBot));
-                _choosePlayModeWindow.BotVsBotButton.onClick.AddListener(() => EnterGameLoopState(GameMode.BotVsBot));
+                    EnterChooseBotState(GameMode.PlayerVsBot));
+                _choosePlayModeWindow.BotVsBotButton.onClick.AddListener(() => EnterChooseBotState(GameMode.BotVsBot));
 
                 _choosePlayModeWindow.BackButton.onClick.AddListener(() => _stateMachine.Enter<ChooseBoardState>());
             }
@@ -45,7 +48,14 @@ namespace Infrastructure.States
 
         private void EnterGameLoopState(GameMode gameMode)
         {
-            _stateMachine.Enter<GameLoopState, GameMode>(gameMode);
+            _gameConfig.GameMode = gameMode;
+            _stateMachine.Enter<GameLoopState>();
+        }
+   
+        private void EnterChooseBotState(GameMode gameMode)
+        {
+            _gameConfig.GameMode = gameMode;
+            _stateMachine.Enter<ChooseBotState>();
         }
     }
 }

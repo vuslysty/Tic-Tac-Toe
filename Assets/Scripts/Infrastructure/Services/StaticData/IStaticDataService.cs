@@ -8,6 +8,5 @@ namespace Infrastructure.Services.StaticData
     {
         void LoadStaticData();
         WindowConfig ForWindow(WindowId windowId);
-        GameConfig GetGameConfig();
     }
 }

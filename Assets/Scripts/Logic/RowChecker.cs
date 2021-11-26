@@ -21,13 +21,6 @@ namespace Logic
             _grid = grid;
         }
 
-        public int GetLenght(int row, int col, Figure figure)
-        {
-            CellPosition position = new CellPosition(row, col);
-
-            return GetLenght(position, figure);
-        }
-    
         public int GetLenght(CellPosition position, Figure figure)
         {
             return GetMaxLengthOnRows(position, figure, out RowType maxLenghtRow);
@@ -71,6 +64,47 @@ namespace Logic
             }
 
             return cellsOnRow;
+        }
+
+        public int GetSidesCountOnRow(CellPosition position, Figure figure, RowType rowType)
+        {
+            int sides = 0;
+            Cell cell = _grid.GetCell(position);
+
+            if (IsPossibleCellWithRightFigure(cell, figure) || (cell != null && cell.GetFigure() == Figure.NONE))
+            {
+                switch (rowType)
+                {
+                    case RowType.Horizontal:
+                        if (GetFigureLengthOnDirection(position, figure, DirectionType.Left) > 0)
+                            sides++;
+                        if (GetFigureLengthOnDirection(position, figure, DirectionType.Right) > 0)
+                            sides++;
+                        break;
+                    case RowType.Vertical:
+                        if (GetFigureLengthOnDirection(position, figure, DirectionType.Top) > 0)
+                            sides++;
+                        if (GetFigureLengthOnDirection(position, figure, DirectionType.Bottom) > 0)
+                            sides++;
+                        break;
+                    case RowType.LeftTopToRightBottomDiagonal:
+                        if (GetFigureLengthOnDirection(position, figure, DirectionType.LeftTop) > 0)
+                            sides++;
+                        if (GetFigureLengthOnDirection(position, figure, DirectionType.RightBottom) > 0)
+                            sides++;
+                        break;
+                    case RowType.LeftBottomToRightTopDiagonal:
+                        if (GetFigureLengthOnDirection(position, figure, DirectionType.LeftBottom) > 0)
+                            sides++;
+                        if (GetFigureLengthOnDirection(position, figure, DirectionType.RightTop) > 0)
+                            sides++;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(rowType), rowType, null);
+                }
+            }
+
+            return sides;
         }
 
         private int GetMaxLengthOnRows(CellPosition position, Figure figure, out RowType maxLenghtRow)

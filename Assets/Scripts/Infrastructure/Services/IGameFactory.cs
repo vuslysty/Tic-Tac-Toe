@@ -1,4 +1,5 @@
-﻿using Logic;
+﻿using Enums;
+using Logic;
 using UnityEngine;
 
 namespace Infrastructure.Services
@@ -8,5 +9,6 @@ namespace Infrastructure.Services
         GameObject CreateHud();
         GameObject CreateGameField();
         CellBehaviour CreateCellBehaviour(Cell cell, GameField gameField, Transform parent);
+        IBot CreateBot(BotType botType, GameField gameField, Figure figure);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Infrastructure.AssetManagement;
+using Infrastructure.Configs;
 using Infrastructure.Services;
 using Infrastructure.Services.StaticData;
 using UI.Services;
@@ -33,6 +34,7 @@ namespace Infrastructure.States
 
         private void RegisterServices()
         {
+            _services.RegisterSingle<IGameConfig>(new GameConfig());
             _services.RegisterSingle<IAssets>(new AssetProvider());
             _services.RegisterSingle<IStaticDataService>(new StaticDataService());
             _services.RegisterSingle<IUIFactory>(new UIFactory(
@@ -40,7 +42,8 @@ namespace Infrastructure.States
                 _services.Single<IStaticDataService>()));
             _services.RegisterSingle<IGameFactory>(new GameFactory(
                 _services.Single<IAssets>(),
-                _services.Single<IStaticDataService>()));
+                _services.Single<IStaticDataService>(),
+                _services.Single<IGameConfig>()));
             _services.RegisterSingle<IWindowService>(new WindowService(_services.Single<IUIFactory>()));
         }
     }

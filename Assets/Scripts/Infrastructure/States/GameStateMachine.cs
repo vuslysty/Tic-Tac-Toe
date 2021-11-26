@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Infrastructure.AssetManagement;
+using Infrastructure.Configs;
 using Infrastructure.Services;
-using Infrastructure.Services.StaticData;
-using UI.Services;
 using UI.Services.Windows;
 
 namespace Infrastructure.States
@@ -18,9 +16,10 @@ namespace Infrastructure.States
             _states = new Dictionary<Type, IExitableState>
             {
                 [typeof(BootstrapState)] = new BootstrapState(this, services),
-                [typeof(ChooseBoardState)] = new ChooseBoardState(this, services.Single<IWindowService>(), services.Single<IStaticDataService>()),
-                [typeof(ChoosePlayModeState)] = new ChoosePlayModeState(this, services.Single<IWindowService>()),
-                [typeof(GameLoopState)] = new GameLoopState(this, services.Single<IGameFactory>())
+                [typeof(ChooseBoardState)] = new ChooseBoardState(this, services.Single<IWindowService>(), services.Single<IGameConfig>()),
+                [typeof(ChoosePlayModeState)] = new ChoosePlayModeState(this, services.Single<IWindowService>(), services.Single<IGameConfig>()),
+                [typeof(ChooseBotState)] = new ChooseBotState(this, services.Single<IWindowService>(), services.Single<IGameConfig>()),
+                [typeof(GameLoopState)] = new GameLoopState(this, services.Single<IGameFactory>(), services.Single<IGameConfig>())
             };
         }
 

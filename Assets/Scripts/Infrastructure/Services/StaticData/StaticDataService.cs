@@ -10,10 +10,8 @@ namespace Infrastructure.Services.StaticData
     public class StaticDataService : IStaticDataService
     {
         private const string StaticDataWindowsPath = "StaticData/UI/WindowStaticData";
-        private const string StaticDataGameConfigPath = "StaticData/GameConfig";
-        
+
         private Dictionary<WindowId, WindowConfig> _windowConfigs;
-        private GameConfig _gameConfig;
 
         public void LoadStaticData()
         {
@@ -21,8 +19,6 @@ namespace Infrastructure.Services.StaticData
                 .Load<WindowStaticData>(StaticDataWindowsPath)
                 .Configs
                 .ToDictionary(x => x.WindowId, x => x);
-
-            _gameConfig = Resources.Load<GameConfig>(StaticDataGameConfigPath);
         }
 
         public WindowConfig ForWindow(WindowId windowId)
@@ -30,11 +26,6 @@ namespace Infrastructure.Services.StaticData
             return _windowConfigs.TryGetValue(windowId, out WindowConfig windowConfig) 
                 ? windowConfig 
                 : null;
-        }
-
-        public GameConfig GetGameConfig()
-        {
-            return _gameConfig;
         }
     }
 }
